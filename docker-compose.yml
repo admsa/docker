@@ -1,0 +1,49 @@
+version: '2'
+services:
+    applications:
+        image: tianon/true
+        volumes:
+            - ./src:/var/www/html
+    php-fpm:
+        env_file:
+            - .env.sample
+        build: 
+            context: ./php-fpm
+            args:
+                - INSTALL_GD=false
+                - INSTALL_PDO=false
+            dockerfile: Dockerfile
+        expose:
+            - 9000
+        volumes_from:
+            - applications
+    nginx:
+        build: ./nginx
+        ports:
+            - ${HOST_IP}:80:80
+        depends_on:
+            - php-fpm
+        volumes_from:
+            - applications
+        extra_hosts:
+            - "webhost:${HOST_IP}" # Append webhost to /etc/hosts
+    mysql:
+        image: mysql:latest
+        volumes:
+            - mysql:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: secret
+            MYSQL_DATABASE: secret
+            MYSQL_USER: secret
+            MYSQL_PASSWORD: secret
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8080:80
+        depends_on:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+volumes:
+    mysql:
+        driver: "local"
