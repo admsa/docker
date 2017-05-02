@@ -1,32 +1,36 @@
 version: '2'
 services:
-    applications:
+
+    application:
         image: busybox:latest
         volumes:
             - ./src:/var/www/html
-    php-fpm:
+
+    php-workspace:
         env_file:
             - .env
         build:
-            context: ./php-fpm
-            args:
-                - INSTALL_GD=${INSTALL_GD}
-                - INSTALL_PDO=${INSTALL_PDO}
-            dockerfile: Dockerfile
+            context: ./php-workspace
+            # args:
+                # - EMPTY=${INSTALL_GD}
+                # - INSTALL_PDO=${INSTALL_PDO}
+            dockerfile: ${PHP_DOCKER_VERSION}
         expose:
             - 9000
         volumes_from:
-            - applications
+            - application
+
     nginx:
         build: ./nginx
         ports:
             - ${HOST_IP}:80:80
         depends_on:
-            - php-fpm
+            - php-workspace
         volumes_from:
-            - applications
+            - application
         extra_hosts:
             - "webhost:${HOST_IP}" # Append webhost to /etc/hosts
+
     mysql:
         image: mysql:latest
         volumes:
@@ -36,6 +40,7 @@ services:
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:

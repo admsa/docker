@@ -1,0 +1,36 @@
+FROM php:7-fpm
+
+ENV TERM xterm
+
+RUN apt-get update && apt-get install -y \
+	curl \
+	libmemcached-dev \
+	libz-dev \
+	libpq-dev \
+	libjpeg-dev \
+	libfreetype6-dev \
+	libjpeg62-turbo-dev \
+	libpng12-dev \
+	libmcrypt-dev \
+	libssl-dev \
+	git
+
+RUN docker-php-ext-install zip && \
+	docker-php-ext-install pdo_mysql && \
+	docker-php-ext-install mcrypt && \
+	docker-php-ext-install pdo_pgsql && \
+	docker-php-ext-install bcmath
+
+# install composer
+RUN curl -s http://getcomposer.org/installer | php && \
+    echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
+    mv composer.phar /usr/local/bin/composer
+
+# source bash
+RUN . ~/.bashrc
+
+#RUN usermod -u 1000 www-data
+
+#WORKDIR /var/www/html
+#RUN useradd -ms /bin/bash docker
+#USER docker
