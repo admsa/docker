@@ -1,4 +1,4 @@
-FROM php:5.6.24-fpm
+FROM php:7-fpm
 
 ARG INSTALL_GD=false
 RUN if [ ${INSTALL_GD} = true ]; then \
@@ -12,8 +12,6 @@ RUN if [ ${INSTALL_PDO} = true ]; then \
 	docker-php-ext-install pdo_mysql \
 ;fi
 
-RUN usermod -u 1000 www-data
-#WORKDIR /var/www/html
-#CMD ["php-fpm"]
-#EXPOSE 9000
-
+WORKDIR /var/www/html
+RUN useradd -ms /bin/bash docker
+USER docker
