@@ -29,7 +29,7 @@ RUN curl -s http://getcomposer.org/installer | php && \
 # source bash
 RUN . ~/.bashrc
 
-#RUN usermod -u 1000 www-data
+RUN usermod -u 1000 www-data
 
 #WORKDIR /var/www/html
 #RUN useradd -ms /bin/bash docker

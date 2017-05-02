@@ -4,7 +4,7 @@ services:
     application:
         image: busybox:latest
         volumes:
-            - ./src:/var/www/html
+            - ${SOURCE_CODE}:/var/www/html
 
     php-workspace:
         env_file:
