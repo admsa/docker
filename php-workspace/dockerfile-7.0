@@ -1,4 +1,4 @@
-FROM php:7-fpm
+FROM php:7.0-fpm
 
 ENV TERM xterm
 
@@ -29,8 +29,8 @@ RUN curl -s http://getcomposer.org/installer | php && \
 # source bash
 RUN . ~/.bashrc
 
-RUN usermod -u 1000 www-data
+RUN groupadd -g 1000 docker
+RUN useradd -u 1000 -g docker -s /bin/bash docker
+USER docker
 
-#WORKDIR /var/www/html
-#RUN useradd -ms /bin/bash docker
-#USER docker
+WORKDIR /var/www/html
