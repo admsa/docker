@@ -1,2 +1,4 @@
 FROM nginx:1.10
-COPY ./default.conf /etc/nginx/conf.d/default.conf
+
+COPY ./conf.d/* /etc/nginx/conf.d/
+WORKDIR /etc/nginx/conf.d

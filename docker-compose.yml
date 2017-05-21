@@ -6,17 +6,14 @@ services:
         volumes:
             - ${SOURCE_CODE}:/var/www/html
 
-    php-workspace:
+    php:
         env_file:
             - .env
         build:
-            context: ./php-workspace
-            # args:
-                # - EMPTY=${INSTALL_GD}
-                # - INSTALL_PDO=${INSTALL_PDO}
+            context: ./php
             dockerfile: ${PHP_DOCKER_VERSION}
         expose:
-            - 9000
+            - ${PHP_FPM_PORT}
         volumes_from:
             - application
 
@@ -25,14 +22,12 @@ services:
         ports:
             - ${HOST_IP}:80:80
         depends_on:
-            - php-workspace
+            - php
         volumes_from:
             - application
-        extra_hosts:
-            - "webhost:${HOST_IP}" # Append webhost to /etc/hosts
 
     mysql:
-        image: mysql:latest
+        image: mariadb:latest
         volumes:
             - mysql:/var/lib/mysql
         environment:
@@ -44,7 +39,7 @@ services:
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:
-            - 8080:80
+            - ${HOST_IP}:8080:80
         depends_on:
             - mysql
         environment:

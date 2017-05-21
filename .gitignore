@@ -1,4 +1,5 @@
 .env
 src/*
 !src/.gitkeep
-!src/phpinfo.php
+!src/sample1
+!src/sample2
