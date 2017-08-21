@@ -5,6 +5,7 @@ services:
         image: busybox:latest
         volumes:
             - ${SOURCE_CODE}:/var/www/html
+        #container_name: app
 
     php:
         env_file:
@@ -16,15 +17,22 @@ services:
             - ${PHP_FPM_PORT}
         volumes_from:
             - application
+        volumes:
+            - ./php/${PHP_DOCKER_VERSION}.ini:/usr/local/etc/php/conf.d/${PHP_DOCKER_VERSION}.ini
+        #container_name: php
 
     nginx:
         build: ./nginx
         ports:
             - ${HOST_IP}:80:80
+            - ${HOST_IP}:443:443
         depends_on:
             - php
         volumes_from:
             - application
+        volumes:
+            - ./ssl:/etc/nginx/ssl
+        #container_name: nginx
 
     mysql:
         image: mariadb:latest
@@ -35,7 +43,10 @@ services:
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-
+        volumes:
+            - ./dumps:/dumps
+        #container_name: mysql
+            
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         ports:
@@ -44,6 +55,8 @@ services:
             - mysql
         environment:
             PMA_HOST: mysql
+        #container_name: phpmyadmin
+
 volumes:
     mysql:
         driver: "local"
