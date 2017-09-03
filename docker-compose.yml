@@ -4,7 +4,7 @@ services:
     application:
         image: busybox:latest
         volumes:
-            - ${SOURCE_CODE}:/var/www/html
+            - ${SOURCE_CODE}:/var/www/
         #container_name: app
 
     php:
@@ -31,20 +31,20 @@ services:
         volumes_from:
             - application
         volumes:
-            - ./ssl:/etc/nginx/ssl
+            - ./nginx/ssl-certs:/etc/nginx/ssl-certs/
+            - ./nginx/global:/etc/nginx/global/
         #container_name: nginx
 
     mysql:
         image: mariadb:latest
         volumes:
             - mysql:/var/lib/mysql
+            - ./data/dumps:/dumps
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-        volumes:
-            - ./dumps:/dumps
         #container_name: mysql
             
     phpmyadmin:
