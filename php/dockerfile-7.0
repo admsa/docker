@@ -1,0 +1,59 @@
+FROM php:7.0-fpm
+
+ENV TERM xterm
+
+RUN apt-get update && apt-get install -y \
+	curl \
+	libcurl3 \
+	libcurl3-dev \
+	libxml2-dev \
+	libmemcached-dev \
+	libz-dev \
+	libpq-dev \
+	libjpeg-dev \
+	libfreetype6-dev \
+	libjpeg62-turbo-dev \
+	libpng-dev \
+	libmcrypt-dev \
+	libssl-dev \
+	git \
+	libc-client-dev \
+	libkrb5-dev
+
+
+RUN rm -r /var/lib/apt/lists/*
+
+RUN docker-php-ext-install zip && \
+	docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+	docker-php-ext-install -j$(nproc) gd && \
+	docker-php-ext-install curl && \
+	docker-php-ext-install iconv && \
+	docker-php-ext-install dom && \
+	docker-php-ext-install json && \
+	docker-php-ext-install pdo && \
+	docker-php-ext-install mbstring && \
+	docker-php-ext-install tokenizer && \
+	docker-php-ext-install pdo_mysql && \
+	docker-php-ext-install mysqli && \
+	docker-php-ext-install mcrypt && \
+	docker-php-ext-install bcmath && \
+	docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+	docker-php-ext-install imap
+
+# install composer
+#RUN curl -s http://getcomposer.org/installer | php && \
+  #echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
+  #mv composer.phar /usr/local/bin/composer
+
+# source bash
+RUN . ~/.bashrc
+
+RUN groupadd -g 1000 docker
+RUN useradd -u 1000 -g docker -s /bin/bash docker
+#RUN apt-get install -y sudo
+#RUN adduser docker sudo
+#mkdir /home/docker
+#chown docker:docker /home/docker
+USER docker
+
+WORKDIR /var/www

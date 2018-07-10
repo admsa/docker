@@ -1,54 +1,54 @@
-version: '2'
+version: '3'
 services:
 
-    application:
-        image: busybox:latest
-        volumes:
-            - ${SOURCE_CODE}:/var/www/html
+  php:
+    env_file:
+      - .env
+    build:
+      context: ./php
+      dockerfile: ${PHP_DOCKER_VERSION}
+    expose:
+      - ${PHP_FPM_PORT}
+    volumes:
+      - ./php/${PHP_DOCKER_VERSION}.ini:/usr/local/etc/php/conf.d/${PHP_DOCKER_VERSION}.ini
+      - ${SOURCE_CODE}:/var/www/
+    #container_name: php
 
-    php-workspace:
-        env_file:
-            - .env
-        build:
-            context: ./php-workspace
-            # args:
-                # - EMPTY=${INSTALL_GD}
-                # - INSTALL_PDO=${INSTALL_PDO}
-            dockerfile: ${PHP_DOCKER_VERSION}
-        expose:
-            - 9000
-        volumes_from:
-            - application
+  nginx:
+    build: ./nginx
+    ports:
+      - ${HOST_IP}:80:80
+      - ${HOST_IP}:443:443
+    depends_on:
+      - php
+    volumes:
+      - ./nginx/ssl-certs:/etc/nginx/ssl-certs/
+      - ./nginx/global:/etc/nginx/global/
+      - ${SOURCE_CODE}:/var/www/
+    #container_name: nginx
 
-    nginx:
-        build: ./nginx
-        ports:
-            - ${HOST_IP}:80:80
-        depends_on:
-            - php-workspace
-        volumes_from:
-            - application
-        extra_hosts:
-            - "webhost:${HOST_IP}" # Append webhost to /etc/hosts
+  mysql:
+    image: mariadb:latest
+    volumes:
+      - mysql:/var/lib/mysql
+      - ./data/dumps:/dumps
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    #container_name: mysql
 
-    mysql:
-        image: mysql:latest
-        volumes:
-            - mysql:/var/lib/mysql
-        environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - ${HOST_IP}:8080:80
+    depends_on:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+    #container_name: phpmyadmin
 
-    phpmyadmin:
-        image: phpmyadmin/phpmyadmin
-        ports:
-            - 8080:80
-        depends_on:
-            - mysql
-        environment:
-            PMA_HOST: mysql
 volumes:
-    mysql:
-        driver: "local"
+  mysql:
+    driver: "local"

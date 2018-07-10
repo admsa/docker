@@ -1,0 +1,7 @@
+create database db_name;
+create user 'db_user'@'localhost' identified by 'db_password';
+grant all privileges on db_name.* to 'db_user'@'localhost' identified by 'db_password';
+flush privileges;
+
+
+docker exec -it -u 0 <container-name> /bin/bash
