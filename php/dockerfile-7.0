@@ -13,12 +13,12 @@ RUN apt-get update && apt-get install -y \
 	libjpeg-dev \
 	libfreetype6-dev \
 	libjpeg62-turbo-dev \
-	libpng12-dev \
+	libpng-dev \
 	libmcrypt-dev \
 	libssl-dev \
 	git \
 	libc-client-dev \
-	libkrb5-dev 
+	libkrb5-dev
 
 
 RUN rm -r /var/lib/apt/lists/*
@@ -42,8 +42,8 @@ RUN docker-php-ext-install zip && \
 
 # install composer
 #RUN curl -s http://getcomposer.org/installer | php && \
-    #echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
-    #mv composer.phar /usr/local/bin/composer
+  #echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
+  #mv composer.phar /usr/local/bin/composer
 
 # source bash
 RUN . ~/.bashrc

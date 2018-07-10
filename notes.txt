@@ -1,0 +1,6 @@
+commands:
+docker-compose run --user $(id -u):$(id -g) [service] [command]
+
+todo:
+create nginx pools
+
