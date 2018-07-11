@@ -22,8 +22,7 @@ services:
     depends_on:
       - php
     volumes:
-      - ./nginx/ssl-certs:/etc/nginx/ssl-certs/
-      - ./nginx/global:/etc/nginx/global/
+      - ./nginx/ssl:/etc/ssl/
       - ${SOURCE_CODE}:/var/www/
     #container_name: nginx
 
