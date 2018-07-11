@@ -27,10 +27,10 @@ services:
     #container_name: nginx
 
   mysql:
-    image: mariadb:latest
+    build: ./mysql
     volumes:
+      - ./scripts/:/scripts
       - mysql:/var/lib/mysql
-      - ./data/dumps:/dumps
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -50,4 +50,4 @@ services:
 
 volumes:
   mysql:
-    driver: "local"
+    driver: "local" #/var/lib/docker/volumes/docker_mysql/_data/mysql
