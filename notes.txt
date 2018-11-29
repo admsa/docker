@@ -15,3 +15,8 @@ iface enp0s3 inet static
   address 192.168.1.4
   netmask 255.255.255.0
   gateway 192.168.1.1
+
+-Changing root password
+RUN echo "root:p@ssw0rd" | chpasswd
+- or
+RUN echo "p@ssw0rd" | passwd --stdin root 
