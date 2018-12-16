@@ -2,12 +2,9 @@
 
 namespace Model;
 use Model\MySQL;
-use Model\Collection;
 use Model\QueryBuilder;
 
-class Base {
-
-  use QueryBuilder;
+class Base extends QueryBuilder {
 
   protected $conn;
   protected $attributes;
@@ -15,50 +12,10 @@ class Base {
   protected $fillable = [];
   protected $primary_key = 'id';
 
-  protected $limit = 50;
-  protected $offset = 0;
-
-  public function __construct($attributes = []) {
+  public function __construct() {
 
     $db = MySQL::getInstance();
     $this->conn = $db::getConnection();
-    $this->attributes = $attributes;
-
-  }
-
-  protected function limit($limit) {
-    $this->limit = $limit;
-    return $this;
-  }
-
-  protected function offset($offset) {
-    $this->offset = $offset;
-    return $this;
-  }
-
-
-  public function findAll() {
-
-    $stmt = $this->conn->prepare("SELECT * FROM {$this->table_name} LIMIT " . intval($this->offset) . ", " . intval($this->limit));
-    $stmt->execute();
-    $results = $stmt->fetchAll(\PDO::FETCH_CLASS);
-
-    return new Collection(get_class($this), $results);
-
-  }
-
-
-  public function find($pk) {
-
-    $stmt = $this->conn->prepare("SELECT * FROM {$this->table_name} WHERE {$this->primary_key} = ?");
-    $stmt->execute([$pk]);
-    $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-    if ($result) {
-      $this->attributes = $result;
-    }
-
-    return $result;
 
   }
 
@@ -102,6 +59,20 @@ class Base {
 
   }
 
+  public function setAttributes($attributes = []) {
+    $this->attributes = $attributes;
+    return $this;
+  }
+
+  // protected function limit($limit) {
+  //   $this->limit = intval($limit);
+  //   return $this;
+  // }
+
+  // protected function offset($offset) {
+  //   $this->offset = intval($offset);
+  //   return $this;
+  // }
 
   public function __set($key, $val = null) {
 

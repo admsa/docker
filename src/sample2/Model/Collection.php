@@ -7,14 +7,14 @@ use Iterator, Countable;
 class Collection implements Iterator, Countable {
 
   private $position = 0;
-  private $class;
+  private $className;
   private $data = [];
 
 
-  public function __construct($class, $data = []) {
+  public function __construct($className, $data = []) {
     $this->position = 0;
-    $this->data = $data;
-    $this->class = $class;
+    $this->data     = $data;
+    $this->className= $className;
   }
 
   public function rewind() {
@@ -22,8 +22,14 @@ class Collection implements Iterator, Countable {
   }
 
   public function current() {
+    
     $current = $this->data[$this->position];
-    return new $this->class(get_object_vars($current));
+    
+    $instance = new $this->className();
+    $instance->setAttributes(get_object_vars($current));
+    
+    return $instance;
+
   }
 
   public function key() {
