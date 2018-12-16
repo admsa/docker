@@ -3,13 +3,49 @@
 namespace Core;
 abstract class Controller extends Layout {
 
-  protected $dependencies = [];
+  private $dependencies = [];
+  private $middlewares  = [];
+  private $class_name = null;
 
-  public function setDependencies($dependencies = []) {
+  protected $rules = [];
 
-    foreach ($dependencies as $key => $className) {
-      $reflection = new \ReflectionClass($className);
-      $this->dependencies[$key] = $reflection->newInstance();
+  public function __construct() {
+    $this->class_name = get_class($this);
+  }
+
+  protected function middleware($name, $fn) {
+    $this->middlewares[$this->class_name][$name] = $fn;
+  }
+
+  public function applyMiddleware($action) {
+
+    $method = strtolower($_SERVER['REQUEST_METHOD']);
+    $rules = $this->rules[$method] ?? [];
+
+    if (!empty($rules) && !in_array($action, $rules)) {
+
+      $this->view('404');
+
+
+    } else {
+
+      foreach ($this->middlewares[$this->class_name] as $key => $fn) {
+        if (($key === $action)) {
+
+          $fn() ? $this->$action() : $this->view('404');
+          break;
+
+        }  
+      }
+
+    }
+    
+  }
+
+  public function setDependencies($deps = []) {
+
+    foreach ($deps as $key => $className) {
+      $this->dependencies[$key] = (new \ReflectionClass($className))->newInstance();
     }
 
     return $this;

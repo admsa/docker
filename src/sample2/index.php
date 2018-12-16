@@ -49,7 +49,7 @@ function __initialize() {
     if ($reflection->hasMethod($action)) {
 
       $deps = include 'dependency.php';
-      $reflection->newInstance()->setDependencies($deps)->setInput($_REQUEST)->$action();
+      $reflection->newInstanceArgs()->setDependencies($deps)->setInput($_REQUEST)->applyMiddleware($action);
 
     } else __404();
 
