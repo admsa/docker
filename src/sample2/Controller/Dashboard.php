@@ -5,6 +5,22 @@ use Model\User;
 
 class Dashboard extends \Core\Controller {
 
+  public function __construct() {
+
+    $this->middleware('index', function() {
+
+        $user = $this->session->get('user');
+        if (!$user) {
+          $this->redirect('page=login');
+        }
+
+        return true;
+        
+      }
+    );
+
+  }
+
   public function index() {
 
     $per_page = $this->input->get('limit', 2);
