@@ -21,17 +21,12 @@ class Base extends QueryBuilder {
 
   public function update() {
 
-    $keys = implode(',', $this->__k);
-    $bind = ':' . implode(',:', $this->__k);
+    $partials = $this->_build_string(array_fill_keys($this->_keys, '?'));
+    $values   = $this->_values;
+    $values[] = $this->_primary_key;
 
-    $set = array_combine(explode(',', $keys), explode(',', $bind));
-    $partial = $this->_build_string($set);
-
-    $exec = array_combine(explode(',', $bind), $this->__v);
-    $exec[':pk'] = $this->__pk;
-
-    $stmt = $this->conn->prepare("UPDATE {$this->table_name} SET " . $partial . " WHERE {$this->primary_key} = :pk");
-    $stmt->execute($exec);
+    $stmt = $this->conn->prepare("UPDATE {$this->table_name} SET $partials WHERE {$this->primary_key} = ?");
+    $stmt->execute($values);
 
     return $stmt->rowCount();
 
@@ -39,12 +34,13 @@ class Base extends QueryBuilder {
 
   public function save() {
 
-    $keys = implode(',', $this->__k);
-    $bind = ':' . implode(',:', $this->__k);
+    $keys    = $this->_keys;
+    $columns = implode(',', $keys);
+    $bind    = implode(',', array_fill(0, count($keys), '?'));
 
     $this->conn
-      ->prepare("INSERT INTO {$this->table_name} ({$keys}) VALUES ({$bind})")
-      ->execute(array_combine(explode(',', $bind), $this->__v));
+      ->prepare("INSERT INTO {$this->table_name} ($columns) VALUES ($bind)")
+      ->execute($this->_values);
 
     return $this->conn->lastInsertId();
 
@@ -53,7 +49,7 @@ class Base extends QueryBuilder {
   public function delete() {
 
     $stmt = $this->conn->prepare("DELETE FROM {$this->table_name} WHERE {$this->primary_key} = ?");
-    $stmt->execute([$this->__pk]);
+    $stmt->execute([$this->_primary_key]);
 
     return $stmt->rowCount();
 
@@ -63,16 +59,6 @@ class Base extends QueryBuilder {
     $this->attributes = $attributes;
     return $this;
   }
-
-  // protected function limit($limit) {
-  //   $this->limit = intval($limit);
-  //   return $this;
-  // }
-
-  // protected function offset($offset) {
-  //   $this->offset = intval($offset);
-  //   return $this;
-  // }
 
   public function __set($key, $val = null) {
 
@@ -95,11 +81,11 @@ class Base extends QueryBuilder {
     }
 
     switch ($property) {
-      case '__k':
+      case '_keys':
         return array_keys($this->_filtered_attr());
-      case '__v':
+      case '_values':
         return array_values($this->_filtered_attr());
-      case '__pk':
+      case '_primary_key':
         return $this->attributes[$this->primary_key];
     }
 
@@ -122,7 +108,7 @@ class Base extends QueryBuilder {
     $result = [];
 
     foreach ($args as $key => $val) {
-      $result[] = $key . "=" . $val;
+      $result[] = $key . " = " . $val;
     }
 
     return implode(',', $result);
