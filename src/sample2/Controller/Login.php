@@ -5,7 +5,6 @@ namespace Controller;
 class Login extends \Core\Controller {
 
   public function index() {
-    $user = new \Model\User;
     $this->view('login/index');
   }
 

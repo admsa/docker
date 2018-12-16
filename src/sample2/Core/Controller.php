@@ -5,8 +5,13 @@ abstract class Controller extends Layout {
 
   protected $dependencies = [];
 
-  public function setDependencies($args = []) {
-    $this->dependencies = $args;
+  public function setDependencies($dependencies = []) {
+
+    foreach ($dependencies as $key => $className) {
+      $reflection = new \ReflectionClass($className);
+      $this->dependencies[$key] = $reflection->newInstance();
+    }
+
     return $this;
   }
 
@@ -44,8 +49,7 @@ abstract class Controller extends Layout {
     }
 
     if (isset($this->dependencies[$property])) {
-      $reflection = new \ReflectionClass($this->dependencies[$property]);
-      return $reflection->newInstance();
+      return $this->dependencies[$property];
     }
 
     return null;
