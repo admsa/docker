@@ -46,8 +46,8 @@ class Input {
 
   }
 
-  public function get($key = null) {
-    return ($key === null) ? $this->data : ($this->data[$key] ?? null);
+  public function get($key = null, $default = null) {
+    return ($key === null) ? $this->data : ($this->data[$key] ?? $default);
   }
 
 
