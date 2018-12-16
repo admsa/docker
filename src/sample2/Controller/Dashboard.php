@@ -9,12 +9,13 @@ class Dashboard extends \Core\Controller {
 
     $per_page = $this->input->get('limit', 2);
     $offset   = $this->input->get('offset', 0);
+    $query    = $this->input->get('q', null);
 
     $user = new User;
-    $count = $user->count();
-    $users = $user->limit($per_page)->offset($offset)->findAll();
+    $count = $user->where('email', 'like', "%$query%")->count();
+    $users = $user->where('email', 'like', "%$query%")->limit($per_page)->offset($offset)->findAll();
 
-    $this->view('dashboard/index', compact('users', 'count', 'per_page'));
+    $this->view('dashboard/index', compact('users', 'count', 'per_page', 'query'));
 
   }
 
