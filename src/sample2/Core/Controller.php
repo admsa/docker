@@ -14,29 +14,27 @@ abstract class Controller extends Layout {
   }
 
   protected function middleware($name, $fn) {
+
     $this->middlewares[$this->class_name][$name] = $fn;
+
   }
 
   public function applyMiddleware($action) {
 
     $method = strtolower($_SERVER['REQUEST_METHOD']);
-    $rules = $this->rules[$method] ?? [];
-
-    if (!empty($rules) && !in_array($action, $rules)) {
+    $rules = $this->rules['post'] ?? [];
+    
+    if ($method === 'get' && !empty($rules) && in_array($action, $rules)) {
 
       $this->view('404');
 
 
     } else {
 
-      foreach ($this->middlewares[$this->class_name] as $key => $fn) {
-        if (($key === $action)) {
+      $middlewares = $this->middlewares[$this->class_name] ?? [];
+      $fn = $middlewares[$action] ?? false;
 
-          $fn() ? $this->$action() : $this->view('404');
-          break;
-
-        }  
-      }
+      $fn ? ($fn() ? $this->$action() : $this->view('404')) : $this->$action();
 
     }
     
@@ -49,11 +47,14 @@ abstract class Controller extends Layout {
     }
 
     return $this;
+
   }
 
   public function setInput($key, $value = null) {
+
     $this->input->set($key, $value);
     return $this;
+
   }
 
   /**
@@ -74,6 +75,22 @@ abstract class Controller extends Layout {
     }
 
     header("Location: " . $url);
+    exit;
+
+  }
+
+  /**
+   * Redirect back
+   *
+   */
+  protected function back() {
+    
+    $uri = [
+      'page'   => $this->input->old('page'),
+      'action' => $this->input->old('action'),
+    ];
+
+    header("Location: " . BASE_URL . "?" . http_build_query($uri));
     exit;
 
   }

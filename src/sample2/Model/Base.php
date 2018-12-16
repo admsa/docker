@@ -32,7 +32,13 @@ class Base extends QueryBuilder {
 
   }
 
+  protected function beforeSave($attributes = []) {
+    return $attributes;
+  }
+
   public function save() {
+
+    $this->attributes  = $this->beforeSave($this->attributes);
 
     $keys    = $this->_keys;
     $columns = implode(',', $keys);
@@ -58,6 +64,10 @@ class Base extends QueryBuilder {
   public function setAttributes($attributes = []) {
     $this->attributes = $attributes;
     return $this;
+  }
+
+  public function getAttributes() {
+    return $this->attributes;
   }
 
   public function __set($key, $val = null) {

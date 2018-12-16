@@ -96,7 +96,7 @@ class QueryBuilder {
       $this->attributes = $result;
     }
 
-    return $result;
+    return $this;
 
   }
 
@@ -104,6 +104,18 @@ class QueryBuilder {
 
     $results = $this->select('*')->execute()->fetchAll(\PDO::FETCH_CLASS);
     return new Collection(get_class($this), $results);
+
+  }
+
+  public function get() {
+
+     $result = $this->select('*')->execute(false)->fetch(\PDO::FETCH_ASSOC);
+
+    if ($result) {
+      $this->attributes = $result;
+    }
+
+    return $this;
 
   }
 
