@@ -1,0 +1,61 @@
+FROM php:7.3-fpm
+
+ENV TERM xterm
+ENV DEBCONF_NOWARNINGS yes
+
+RUN apt-get update && apt-get install -y \
+	# mcrypt
+	libmcrypt-dev \
+	# curl
+	curl \
+	libcurl4 \
+	libcurl4-openssl-dev \
+	# zip
+	zip \
+	libzip-dev \
+	# imagick
+	libmagickwand-dev \
+	libxml2-dev \
+	libmemcached-dev \
+	libz-dev \
+	libpq-dev \
+	libjpeg-dev \
+	libfreetype6-dev \
+	libjpeg62-turbo-dev \
+	libpng-dev \
+	libssl-dev \
+	git \
+	libc-client-dev \
+	libkrb5-dev
+
+RUN pecl install imagick
+RUN pecl install mcrypt-1.0.2
+RUN rm -r /var/lib/apt/lists/*
+
+RUN docker-php-ext-enable mcrypt && \
+	docker-php-ext-enable imagick && \
+  	docker-php-ext-configure zip --with-libzip && \
+  	docker-php-ext-install zip && \
+	docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+	docker-php-ext-install -j$(nproc) gd && \
+	docker-php-ext-install curl && \
+	docker-php-ext-install -j$(nproc) iconv && \
+	docker-php-ext-install dom && \
+	docker-php-ext-install json && \
+	docker-php-ext-install pdo && \
+	docker-php-ext-install mbstring && \
+	docker-php-ext-install tokenizer && \
+	docker-php-ext-install pdo_mysql && \
+	docker-php-ext-install mysqli && \
+	docker-php-ext-install bcmath && \
+	docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
+	docker-php-ext-install imap
+
+# source bash
+RUN . ~/.bashrc
+
+RUN groupadd -g 1000 docker
+RUN useradd -u 1000 -g docker -s /bin/bash docker
+USER docker
+
+WORKDIR /var/www

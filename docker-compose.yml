@@ -12,7 +12,8 @@ services:
     volumes:
       - ./php/${PHP_DOCKER_VERSION}.ini:/usr/local/etc/php/conf.d/${PHP_DOCKER_VERSION}.ini
       - ${SOURCE_CODE}:/var/www/
-    #container_name: php
+    container_name: php
+    restart: always
 
   nginx:
     build: ./nginx
@@ -24,7 +25,8 @@ services:
     volumes:
       - ./nginx/ssl:/etc/ssl/
       - ${SOURCE_CODE}:/var/www/
-    #container_name: nginx
+    container_name: nginx
+    restart: always
 
   mysql:
     build: ./mysql
@@ -36,7 +38,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    #container_name: mysql
+    container_name: mysql
+    restart: always
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -46,8 +49,10 @@ services:
       - mysql
     environment:
       PMA_HOST: mysql
-    #container_name: phpmyadmin
+    container_name: phpmyadmin
+    restart: always
 
 volumes:
   mysql:
-    driver: "local" #/var/lib/docker/volumes/docker_mysql/_data/mysql
+    driver: "local"
+    #ddriver: /var/lib/docker/volumes/docker_mysql/_data/mysql
