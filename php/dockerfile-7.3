@@ -4,6 +4,7 @@ ENV TERM xterm
 ENV DEBCONF_NOWARNINGS yes
 
 RUN apt-get update && apt-get install -y \
+	build-essential \
 	# mcrypt
 	libmcrypt-dev \
 	# curl
@@ -26,17 +27,23 @@ RUN apt-get update && apt-get install -y \
 	libssl-dev \
 	git \
 	libc-client-dev \
-	libkrb5-dev
+	libkrb5-dev \
+	jpegoptim optipng pngquant gifsicle \
+	unzip \
+	locales
 
 RUN pecl install imagick
 RUN pecl install mcrypt-1.0.2
-RUN rm -r /var/lib/apt/lists/*
 
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install extensions
 RUN docker-php-ext-enable mcrypt && \
 	docker-php-ext-enable imagick && \
   	docker-php-ext-configure zip --with-libzip && \
   	docker-php-ext-install zip && \
-	docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ && \
+	docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/ && \
 	docker-php-ext-install -j$(nproc) gd && \
 	docker-php-ext-install curl && \
 	docker-php-ext-install -j$(nproc) iconv && \
@@ -49,13 +56,27 @@ RUN docker-php-ext-enable mcrypt && \
 	docker-php-ext-install mysqli && \
 	docker-php-ext-install bcmath && \
 	docker-php-ext-configure imap --with-kerberos --with-imap-ssl && \
-	docker-php-ext-install imap
+	docker-php-ext-install imap && \
+	docker-php-ext-install exif pcntl
+
 
 # source bash
 RUN . ~/.bashrc
 
-RUN groupadd -g 1000 docker
-RUN useradd -u 1000 -g docker -s /bin/bash docker
-USER docker
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add user for laravel application
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy existing application directory contents
+COPY . /var/www
+
+# Copy existing application directory permissions
+COPY --chown=www:www . /var/www
+
+# Change current user to www
+USER www
 
 WORKDIR /var/www

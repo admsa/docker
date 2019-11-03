@@ -6,6 +6,7 @@ create nginx pools
 
 #docker exec -it -u 0 <container-name> /bin/bash
 #docker volume rm $(docker volume ls -qf dangling=true)
+docker volume inspect docker_mysql
 
 edit:
 /etc/network/interfaces
