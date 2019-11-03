@@ -44,7 +44,7 @@ services:
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     ports:
-      - ${HOST_IP}:7777:80
+      - ${HOST_IP}:8080:80
     depends_on:
       - mysql
     environment:
