@@ -4,7 +4,7 @@ docker-compose run --user $(id -u):$(id -g) [service] [command]
 todo:
 create nginx pools
 
-#docker run -ti -d --privileged=true images_docker  "/sbin/init"
+#docker run -d -it --privileged=true ubuntu:focal  "/sbin/init"
 #docker run -d -t ubuntu:22.04
 #docker exec -it -u 0 <container-name> /bin/bash
 #docker volume rm $(docker volume ls -qf dangling=true)
@@ -23,3 +23,7 @@ iface enp0s3 inet static
 RUN echo "root:p@ssw0rd" | chpasswd
 - or
 RUN echo "p@ssw0rd" | passwd --stdin root 
+
+sudo usermod -aG docker $USER
+
+docker build -t test/v1 .
