@@ -4,6 +4,7 @@ docker-compose run --user $(id -u):$(id -g) [service] [command]
 todo:
 create nginx pools
 
+#docker run -ti -d --privileged=true images_docker  "/sbin/init"
 #docker run -d -t ubuntu:22.04
 #docker exec -it -u 0 <container-name> /bin/bash
 #docker volume rm $(docker volume ls -qf dangling=true)
