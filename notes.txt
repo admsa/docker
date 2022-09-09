@@ -27,3 +27,13 @@ RUN echo "p@ssw0rd" | passwd --stdin root
 sudo usermod -aG docker $USER
 
 docker build -t test/v1 .
+
+kubectl get nodes --show-labels
+
+minikube addons enable default-storageclass
+sudo ls /var/lib/docker/volumes/minikube/_data/data
+
+https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/master/docs/operations.md
+
+# To point your shell to minikube's docker-daemon, run:
+# eval $(minikube -p minikube docker-env)
