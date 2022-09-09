@@ -37,3 +37,6 @@ https://github.com/kubernetes-sigs/sig-storage-local-static-provisioner/blob/mas
 
 # To point your shell to minikube's docker-daemon, run:
 # eval $(minikube -p minikube docker-env)
+
+# Undo
+# eval $(minikube -p minikube docker-env)

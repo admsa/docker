@@ -1,4 +1,4 @@
-FROM php:8.1.10-fpm
+FROM php:7.3-fpm
 
 ENV TERM xterm
 ENV DEBCONF_NOWARNINGS yes
